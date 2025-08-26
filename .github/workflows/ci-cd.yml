@@ -50,9 +50,11 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
+
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
@@ -74,8 +76,7 @@ jobs:
           service: ${{ env.BACKEND_SERVICE }}
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/backend:${{ github.sha }}
           region: ${{ env.REGION }}
-          allow_unauthenticated: true
-          flags: --port=8080
+          flags: --port=8080 --allow-unauthenticated
 
       # BACKEND
       - name: Set BACKEND_URL env
@@ -89,7 +90,7 @@ jobs:
             -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/frontend:${{ github.sha }} frontend
           docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/frontend:${{ github.sha }}
 
-      # Forntend -> Cloud Rum
+      # Frontend -> Cloud Run
       - name: Deploy frontend to Cloud Run
         id: deploy-frontend
         uses: google-github-actions/deploy-cloudrun@v2
@@ -97,8 +98,7 @@ jobs:
           service: ${{ env.FRONTEND_SERVICE }}
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/frontend:${{ github.sha }}
           region: ${{ env.REGION }}
-          allow_unauthenticated: true
-          flags: --port=8080
+          flags: --port=8080 --allow-unauthenticated
 
       - name: Set FRONTEND_URL env
         run: echo "FRONTEND_URL=${{ steps.deploy-frontend.outputs.url }}" >> $GITHUB_ENV
