@@ -12,5 +12,7 @@ RUN npm config set registry https://registry.npmjs.org/ \
 
 COPY . .
 
+ENV NODE_ENV=production
 EXPOSE 8080
+
 CMD ["node", "server.js"]
