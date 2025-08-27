@@ -121,3 +121,32 @@ jobs:
         env:
           APP_URL: ${{ env.FRONTEND_URL }}
         run: npm run test:regression
+
+      - name: Send email on success
+        if: ${{ success() }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.MAIL_USER }}
+          password: ${{ secrets.MAIL_PASS }}
+          subject: "CI/CD: Deploy udany"
+          to: pawelwoe@gmail.com
+          from: "CI/CD Bot <${{ secrets.MAIL_USER }}>"
+          content_type: text/html
+          body: "Elegancko"
+
+      - name: Send email on failure
+        if: ${{ failure() }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.MAIL_USER }}
+          password: ${{ secrets.MAIL_PASS }}
+          subject: "CI/CD: Deploy nieudany"
+          to: pawelwoe@gmail.com
+          from: "CI/CD Bot <${{ secrets.MAIL_USER }}>"
+          content_type: text/plain
+          body: "Coś poszło nie tak"
+
